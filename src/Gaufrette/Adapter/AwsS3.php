@@ -12,8 +12,9 @@ use Aws\S3\S3Client;
  * @author  Michael Dowling <mtdowling@gmail.com>
  */
 class AwsS3 implements Adapter,
-                       MetadataSupporter,
-                       ListKeysAware
+    MetadataSupporter,
+    ListKeysAware,
+    MimeTypeProvider
 {
     protected $service;
     protected $bucket;
@@ -22,7 +23,7 @@ class AwsS3 implements Adapter,
     protected $metadata = array();
     protected $detectContentType;
 
-    public function __construct(S3Client $service, $bucket, array $options = array(), $detectContentType = false)
+    public function __construct(S3Client $service, $bucket, array $options = array(), $detectContentType = true)
     {
         $this->service = $service;
         $this->bucket = $bucket;
@@ -271,6 +272,18 @@ class AwsS3 implements Adapter,
         $options = array_merge($this->options, $options, $this->getMetadata($key));
 
         return $options;
+    }
+
+    public function mimeType($key)
+    {
+        $this->ensureBucketExists();
+        $options = $this->getOptions($key);
+
+        try {
+            return (string)$this->service->getObject($options)->get('ContentType');
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     protected function computePath($key)

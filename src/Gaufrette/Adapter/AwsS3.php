@@ -12,9 +12,9 @@ use Aws\S3\S3Client;
  * @author  Michael Dowling <mtdowling@gmail.com>
  */
 class AwsS3 implements Adapter,
-    MetadataSupporter,
-    ListKeysAware,
-    MimeTypeProvider
+                       MetadataSupporter,
+                       ListKeysAware,
+                       MimeTypeProvider
 {
     protected $service;
     protected $bucket;
